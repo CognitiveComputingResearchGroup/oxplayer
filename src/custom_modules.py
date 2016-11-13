@@ -59,23 +59,15 @@ class OXPlayerEnvironment(FrameworkModule):
     def get_module_name(cls):
         return ENVIRONMENT_MODULE
 
-    def display_board(self):
-        board = ""
-        mark = lambda x: 'X' if self._board[x] is 1 else 'O'
-        for pos in range(len(self._board)):
-            if pos % 3 is 0:
-                board += mark(pos)
-            if pos % 3 is 1:
-                board += "│"
-                board += mark(pos)
-                board += "│"
-            if pos % 3 is 2:
-                board += mark(pos)
-                board += "\n"
-                if pos % 9 is not 8:
-                    board += "─┼─┼─"
-                board += "\n"
-        return board
+    def board_string(self):
+        board_template = "{}│{}│{}\n" \
+                         "─┼"+"─┼─\n" \
+                         "{}│{}│{}\n" \
+                         "─┼"+"─┼─\n" \
+                         "{}│{}│{}\n"
+        board_marks = {1:"X", 0:"O", -1:" "}
+        ox_board = (board_marks[mark] for mark in self._board)
+        return board_template.format(*ox_board)
 
     def call(self):
         if not self.turn:
@@ -84,21 +76,15 @@ class OXPlayerEnvironment(FrameworkModule):
         else:
             self._board[self._opponent()] = 0
             logger.info("Player plays")
-        logger.info(self.display_board())
+        logger.info(self.board_string())
+        self.publish(BOARD_STATE_TOPIC,self._board)
 
 
 class BasicSensoryMemory(SensoryMemory):
     def __init__(self, **kwargs):
         super(BasicSensoryMemory, self).__init__(**kwargs)
 
-    def add_subscribers(self):
-        self.add_subscriber(TEXTSCAN_TOPIC)
 
-    def get_next_msg(self, topic):
-        return super(BasicSensoryMemory, self).get_next_msg(topic)
-
-    def publish(self, topic, msg):
-        super(BasicSensoryMemory, self).publish(topic, msg)
 
     def call(self):
         text = self.get_next_msg(TEXTSCAN_TOPIC)
