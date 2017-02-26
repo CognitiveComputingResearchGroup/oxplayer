@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 
-from custom_modules import BasicSensoryMemory, BasicSensoryMotorMemory, TextAttractorWorkspace, TextAttractorProceduralMemory, TextAttractorEnvironment
 from lidapy.framework.agent_starter import AgentStarter
+
+from env.src.environment import BasicSensoryMemory, BasicSensoryMotorMemory, TextAttractorWorkspace, TextAttractorProceduralMemory, TextAttractorEnvironment
 
 if __name__ == '__main__':
 
