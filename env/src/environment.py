@@ -1,38 +1,16 @@
+# coding=utf-8
 from time import sleep
 from functools import partial
 
 from numpy import average
 
-from lidapy.framework.msg import built_in_topics, FrameworkTopic
-from lidapy.framework.shared import CognitiveContent
-from lidapy.framework.module import FrameworkModule
-from lidapy.module.action_selection import ActionSelection
-from lidapy.module.current_situational_model import CurrentSituationalModel
-from lidapy.module.global_workspace import GlobalWorkspace
-from lidapy.module.perceptual_associative_memory import PerceptualAssociativeMemory
-from lidapy.module.procedural_memory import ProceduralMemory
-from lidapy.module.sensory_memory import SensoryMemory
-from lidapy.module.sensory_motor_memory import SensoryMotorMemory
-from lidapy.module.workspace import Workspace
-from lidapy.framework.strategy import LinearExciteStrategy
-from lidapy.util import logger
+import lidapy
 from std_msgs.msg import String
 
 
 # Topic definitions
 BOARD_STATE_TOPIC = FrameworkTopic("/oxplayer/env/board", String)
 ACTION_TOPIC = FrameworkTopic("/oxplayer/env/action", String)
-DORSAL_STREAM_TOPIC = built_in_topics["dorsal_stream"]
-VENTRAL_STREAM_TOPIC = built_in_topics["ventral_stream"]
-DETECTED_FEATURES_TOPIC = built_in_topics["detected_features"]
-PERCEPTS_TOPIC = built_in_topics["percepts"]
-WORKSPACE_COALITIONS_TOPIC = built_in_topics["workspace_coalitions"]
-GLOBAL_BROADCAST_TOPIC = built_in_topics["global_broadcast"]
-CANDIDATE_BEHAVIORS_TOPIC = built_in_topics["candidate_behaviors"]
-SELECTED_BEHAVIORS_TOPIC = built_in_topics["selected_behaviors"]
-NODES_TOPIC = FrameworkTopic("/text_attractor/nodes", String)
-
-ENVIRONMENT_MODULE = "environment"
 
 def opponent(board):
     for i in range(len(board)):
@@ -42,37 +20,30 @@ def opponent(board):
 
 
 
-class OXPlayerEnvironment(FrameworkModule):
+class OXPlayerEnvironment(object):
 
     _board = [-1]*9
-    _turn = False
+    _agent_turn = False
     _opponent = partial(opponent, board=_board)
 
     def __init__(self, **kwargs):
-        super(OXPlayerEnvironment, self).__init__(ENVIRONMENT_MODULE,**kwargs)
-        self.add_publisher(BOARD_STATE_TOPIC)
-        self.add_subscriber(ACTION_TOPIC)
         self._start = True
-
-
-    @classmethod
-    def get_module_name(cls):
-        return ENVIRONMENT_MODULE
+        lidapy.init(process_names='Environment')
 
     def board_string(self):
         board_template = "{}│{}│{}\n" \
-                         "─┼"+"─┼─\n" \
+                         "─┼─┼─\n" \
                          "{}│{}│{}\n" \
-                         "─┼"+"─┼─\n" \
+                         "─┼─┼─\n" \
                          "{}│{}│{}\n"
         board_marks = {1:"X", 0:"O", -1:" "}
         ox_board = (board_marks[mark] for mark in self._board)
         return board_template.format(*ox_board)
 
     def call(self):
-        if not self.turn:
+        if not self._agent_turn:
             self._board[self._opponent()] = 1
-            logger.info("Opponent plays")
+            logger.info("Opponent played")
         else:
             self._board[self._opponent()] = 0
             logger.info("Player plays")
