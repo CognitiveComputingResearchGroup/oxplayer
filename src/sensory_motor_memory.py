@@ -13,7 +13,7 @@ def see_board():
     msg = blank_position.receive(timeout=1)
     if msg:
         lidapy.loginfo(msg)
-        lidapy.loginfo("motor move:"+str(msg))
+        lidapy.loginfo('motor move:'+str(msg))
         action_topic.send(str(int(msg)+1))
 
 

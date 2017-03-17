@@ -31,12 +31,12 @@ class OXPlayerEnvironment(object):
         self.mainloop()
 
     def board_string(self):
-        board_template = "{}│{}│{}\n" \
-                         "─┼─┼─\n" \
-                         "{}│{}│{}\n" \
-                         "─┼─┼─\n" \
-                         "{}│{}│{}\n"
-        board_marks = {1:"X", 0:"O", -1:" "}
+        board_template = '{}│{}│{}\n' \
+                         '─┼─┼─\n' \
+                         '{}│{}│{}\n' \
+                         '─┼─┼─\n' \
+                         '{}│{}│{}\n'
+        board_marks = {1:'X', 0:'O', -1:' '}
         ox_board = (board_marks[mark] for mark in self._board)
         return board_template.format(*ox_board)
 
@@ -48,7 +48,7 @@ class OXPlayerEnvironment(object):
         msg = action_topic.receive(timeout=1)
         move = -1
         if msg:
-            lidapy.loginfo("Env recvd:"+msg)
+            lidapy.loginfo('Env recvd:'+msg)
             move = int(msg)
         return move
 
@@ -56,17 +56,17 @@ class OXPlayerEnvironment(object):
         while True:
             if not self._agent_turn:
                 self._board[self._opponent()] = 1
-                lidapy.loginfo("Opponent played")
+                lidapy.loginfo('Opponent played')
                 self._agent_turn = not self._agent_turn
             else:
                 move = self.receive_move()
                 if move is not -1:
-                    lidapy.loginfo("Player plays")
+                    lidapy.loginfo('Player plays')
                     self._board[move] = 0
                     self._agent_turn = not self._agent_turn
 
             lidapy.loginfo(self.board_string())
             board_state_topic.send(self._board)
-            print("running")
+            print('running')
 
 

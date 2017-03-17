@@ -15,7 +15,7 @@ def see_board():
     if msg:
         lidapy.loginfo(msg)
         blank = first_blank(msg)
-        lidapy.loginfo("blank position:"+str(blank))
+        lidapy.loginfo('blank position:'+str(blank))
         blank_position.send(blank)
 
 lidapy.init(config=Config(argv[1]), process_name='sensory_memory')
