@@ -14,7 +14,7 @@ def see_board():
     if msg:
         lidapy.loginfo(msg)
         lidapy.loginfo("motor move:"+str(msg))
-        action_topic.send(int(msg)+1)
+        action_topic.send(str(int(msg)+1))
 
 
 lidapy.init(config=Config(argv[1]), process_name='sensory_motor_memory')

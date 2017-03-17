@@ -1,9 +1,7 @@
 #!/usr/bin/python
 #  coding=utf-8
-from time import sleep
 from functools import partial
 
-from numpy import average
 
 import lidapy
 from std_msgs.msg import String
@@ -47,11 +45,11 @@ class OXPlayerEnvironment(object):
         _agent_turn = False
 
     def receive_move(self):
-        msg = action_topic.receive()
+        msg = action_topic.receive(timeout=1)
         move = -1
         if msg:
             lidapy.loginfo("Env recvd:"+msg)
-        move = int(msg)
+            move = int(msg)
         return move
 
     def mainloop(self):
@@ -60,16 +58,15 @@ class OXPlayerEnvironment(object):
                 self._board[self._opponent()] = 1
                 lidapy.loginfo("Opponent played")
                 self._agent_turn = not self._agent_turn
-                lidapy.loginfo(self.board_string())
-                board_state_topic.send(self._board)
             else:
                 move = self.receive_move()
                 if move is not -1:
                     lidapy.loginfo("Player plays")
                     self._board[move] = 0
                     self._agent_turn = not self._agent_turn
-                    lidapy.loginfo(self.board_string())
-                    board_state_topic.send(self._board)
+
+            lidapy.loginfo(self.board_string())
+            board_state_topic.send(self._board)
             print("running")
 
 
